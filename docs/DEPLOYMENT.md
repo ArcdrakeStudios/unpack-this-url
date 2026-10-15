@@ -22,4 +22,4 @@ Hosting receives page/asset requests and may keep access logs; describe the chos
 host's processing and operator/contact information accurately. Retain the previous
 static package for rollback. The app has no stored user data to migrate.
 
-The shared home is tools.arcdrake.com. Source publication and production hosting are separate; see [RELEASING.md](RELEASING.md).
+The planned shared home is tools.arcdrake.com. Source publication and production hosting are separate; see [RELEASING.md](RELEASING.md).

@@ -9,9 +9,7 @@ fetched or persisted. Syntax observations are not destination or safety judgment
 The app needs no account or runtime dependencies. With Node.js 24 installed,
 start the local preview:
 
-```powershell
-npm test
-npm run build
+```sh
 npm run dev
 ```
 
@@ -38,10 +36,10 @@ connections; all rendering uses text nodes and textarea values.
 ![Synthetic desktop example](docs/screenshot-desktop.png)
 
 MIT licensed; see [LICENSE](LICENSE) and [third-party inventory](THIRD_PARTY_NOTICES.md).
-Built by [Arcdrake](https://arcdrake.com/). The source is available in this repository; production hosting is being prepared.
+Built by [Arcdrake](https://arcdrake.com/). The source is available in this repository; production hosting is not yet live.
 See [verification](docs/VERIFICATION.md) and [deployment](docs/DEPLOYMENT.md).
 
-Requires Node.js 24 or newer for the local preview and tests. No install is needed.
+Requires Node.js 24 or newer for the local preview and core tests. No package installation is needed for those commands.
 `npm test` runs deterministic core tests. `npm run package` requires Python 3.11+
 and creates a checked static ZIP plus SHA-256 manifest in `artifacts/release/`.
 There is no frontend compilation step; `dist/` is the application source.
@@ -49,7 +47,7 @@ There is no frontend compilation step; `dist/` is the application source.
 For browser regression checks, follow the locked development setup below and run `npm run test:ci`. The script starts/stops its own preview and headless browser. Screenshots go to ignored `artifacts/readiness/`; only `UPDATE_SCREENSHOTS=1` replaces release images in `docs/`. Do not run it while
 another process owns the app's preview port. No package/browser installation is
 required for normal use. Chromium desktop and 390px emulation are recorded;
-physical devices, screen readers and other engines are not newly verified.
+physical devices, screen readers and other engines have not been tested.
 
 For contributions, supply a reproducible issue with synthetic inputs only; never
 attach real credentials or private URLs/domains. Run the relevant core/browser
@@ -61,7 +59,7 @@ checks with a proposed fix. [Report an issue](https://github.com/ArcdrakeStudios
 
 Part of Arcdrake's tools collection. The planned shared home is `tools.arcdrake.com`;
 production hosting is not live as part of this source release. Local use is available
-above. Development checks use Node.js 24, Python 3 and locked Playwright tooling:
+above. Development checks use Node.js 24, Python 3.11+ and locked Playwright tooling:
 
 ```sh
 npm ci
