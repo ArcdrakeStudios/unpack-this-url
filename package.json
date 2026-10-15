@@ -1,0 +1,29 @@
+{
+  "name": "unpack-this-url",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "dev": "node tools/serve.mjs",
+    "build": "node tools/verify-static.mjs",
+    "test:browser": "node tests/readiness-browser.mjs",
+    "package": "python tools/package-release.py",
+    "test:ci": "node ci/browser.mjs",
+    "package:release": "python tools/package-release.py"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "1.64.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcdrakeStudios/unpack-this-url.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ArcdrakeStudios/unpack-this-url/issues"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
