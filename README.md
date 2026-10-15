@@ -14,7 +14,8 @@ npm run dev
 ```
 
 Local entry: http://127.0.0.1:43218. Stop the server with Ctrl+C.
-`dist/` is the complete static hosting artifact; no server processing is needed.
+`dist/` contains the static application; no server processing is needed.
+Production uses the approved release artifact; see [deployment](docs/DEPLOYMENT.md).
 
 Bounds: 8,192 input characters; first 150 query entries expanded; cleanup disabled
 beyond that limit; 3 nested levels, 12 nested links total, and 2 additional percent
