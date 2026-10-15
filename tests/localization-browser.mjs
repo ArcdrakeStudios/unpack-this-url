@@ -1,4 +1,5 @@
 import {chromium} from 'playwright';
+import {checkNarrowLayout} from './narrow-layout.mjs';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const root=new URL('../dist/',import.meta.url);
@@ -6,9 +7,9 @@ const browser=await chromium.launch({headless:true});
 try{
  const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true});
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
- let dnsQueries=0;
+ let dnsQueries=0, fontCSS='';
  await context.route('https://cloudflare-dns.com/**',async route=>{dnsQueries++;await route.fulfill({json:{Status:0,Answer:[]}});});
- await context.route('http://local.test/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').pop()||'index.html';const data=await readFile(new URL(name,root));await route.fulfill({body:data,contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
+ await context.route('http://local.test/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').pop()||'index.html';const data=await readFile(new URL(name,root));await route.fulfill({body:name.endsWith('.css')?Buffer.concat([data,Buffer.from('\n'+fontCSS)]):data,contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('http://local.test/?lang=de');await page.locator('[data-app-language="de"]').waitFor();
  assert.equal(await page.locator('html').getAttribute('lang'),'de');
  assert.equal(await page.evaluate(async()=>{const {translate}=await import('/language.js');const el=document.createElement('p');el.textContent='Remove query entry 1: $&$1';document.body.append(el);await new Promise(r=>setTimeout(r,0));const output=el.textContent;el.remove();return translate('Remove query entry 1: $&$1')===output&&output.endsWith('$&$1');}),true);
@@ -52,7 +53,7 @@ try{
  }
  await page.goto('http://local.test/?lang=en');assert.equal(await page.locator('html').getAttribute('lang'),'en');
  await page.evaluate(()=>localStorage.setItem('arcdrake-tools-language','de'));await page.goto('http://local.test/');assert.equal(await page.locator('html').getAttribute('lang'),'de');
- await page.setViewportSize({width:320,height:800});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await checkNarrowLayout(page,new URL('../artifacts/localization/',import.meta.url),css=>{fontCSS=css;});
  const denied=await context.newPage();await denied.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw Error('Storage denied');}}));await denied.goto('http://local.test/?lang=de');assert.equal(await denied.locator('html').getAttribute('lang'),'de');await denied.close();const german=await browser.newContext({locale:'de-DE'});await german.route('http://local.test/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').pop()||'index.html';await route.fulfill({body:await readFile(new URL(name,root)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});const native=await german.newPage();await native.goto('http://local.test/');assert.equal(await native.locator('html').getAttribute('lang'),'de');await german.close();
  assert.deepEqual(errors,[]);console.log(app+': German dynamic journey, raw data, EN/DE state retention, shared event, preference/URL precedence, mobile and errors passed.');
 }finally{await browser.close();}
