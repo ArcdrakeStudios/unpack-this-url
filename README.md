@@ -28,7 +28,8 @@ igshid on the outer query, preserving other raw entries and their order/duplicat
 It can change URL behavior. Credentials and fragments require separate explicit
 choices. Clipboard access requires a secure context; if denied, the preview is
 selected for manual copy. Clear empties the current page; browser/clipboard state
-is outside the app. No URL-derived hyperlinks, storage, analytics, fonts, images,
+is outside the app. Only the interface language preference is saved in browser
+storage; entered URLs and results are not. No URL-derived hyperlinks, analytics, fonts, images,
 remote scripts, network APIs or automatic navigation are used. CSP blocks network
 connections; all rendering uses text nodes and textarea values.
 
