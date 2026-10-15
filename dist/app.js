@@ -1,9 +1,10 @@
+import './language.js';
 import { inspect, sanitize } from './anatomy.js'
 const $ = id => document.getElementById(id)
 let current = null
-const element = (tag, text, className) => { const el = document.createElement(tag); el.textContent = text; if (className) el.className = className; return el }
+const element = (tag, text, className) => { const el = document.createElement(tag); el.textContent = text; if (!['(empty key)','(empty value)','(no host)'].includes(text) && className && /(?:^| )(mono|nested-host)(?: |$)/.test(className)) el.dataset.l10nRaw=''; if (className) el.className = className; return el }
 function clearResult() { current = null; $('results').hidden = true; $('error').hidden = true; $('copy').disabled = true; $('copy-status').textContent = '' }
-function field(parent, name, value) { parent.append(element('dt', name), element('dd', value === null || value === undefined || value === '' ? '(absent / empty)' : value)) }
+function field(parent, name, value) { const v=element('dd', value === null || value === undefined || value === '' ? '(absent / empty)' : value); if(value !== null && value !== undefined && value !== '')v.dataset.l10nRaw=''; parent.append(element('dt',name),v) }
 function preview() {
   if (!current) return
   $('copy-status').textContent = ''
@@ -17,7 +18,7 @@ function preview() {
 function nestedCard(link) {
   const r = link.result; const card = element('article', '', 'nested-card')
   card.append(element('p', `Level ${r.depth} · query entry ${link.index + 1} · ${link.parameter}`, 'eyebrow'), element('h3', r.host || '(no host)', 'nested-host'), element('p', `${r.scheme} · ${r.path}`, 'mono'))
-  if (r.unicodeHost !== r.host) card.append(element('p', `Unicode form: ${r.unicodeHost}`, 'mono'))
+  if (r.unicodeHost !== r.host) card.append(element('p', `Unicode form: ${r.unicodeHost}`, 'unicode-form'))
   for (const warning of r.warnings) card.append(element('p', warning, 'nested-warning'))
   const details = element('details', ''); details.append(element('summary', 'Decoded value & decoding steps'))
   link.steps.forEach((step, i) => { details.append(element('p', i === 0 ? 'Form-query decoded value' : `Extra percent-decoding pass ${i}`, 'muted'), element('pre', step)) })
