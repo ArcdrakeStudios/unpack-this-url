@@ -6,7 +6,7 @@ HTTP(S) links nested in common redirect parameters. Optional cleanup shows exact
 transformations before an explicit copy action. Submitted URLs are never visited,
 fetched or persisted. Syntax observations are not destination or safety judgments.
 
-The app needs no account or runtime dependencies. With Node.js 24 installed,
+The app needs no account or runtime dependencies. With Node.js 24 or newer installed,
 start the local preview:
 
 ```sh
