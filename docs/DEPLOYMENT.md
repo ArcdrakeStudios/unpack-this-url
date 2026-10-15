@@ -1,12 +1,17 @@
 # Static deployment
 
-Run `npm test`, the optional browser checks described in [README](../README.md),
+For local package inspection, run `npm test`, the browser checks described in [README](../README.md),
 then `python tools/package-release.py` (Python 3.11+). The resulting
 `artifacts/release/static-release.zip` contains exactly four application files,
 LICENSE and THIRD_PARTY_NOTICES.md; manifest.json records archive/per-file hashes.
-No dependency install, frontend compilation, backend, database or account is needed.
+Packaging needs no dependency installation. Browser checks require the locked
+Playwright dependency and browser installation documented in README. Runtime use
+requires no backend, database or account.
 
-Serve the unpacked static package over HTTPS from its own root or directory.
+For production, use only the retained **Prepare release artifact** workflow output
+for the approved main commit, following [RELEASING.md](RELEASING.md). Local packages
+are for inspection, not production deployment. Serve the unpacked approved static
+package over HTTPS from its own root or directory.
 A directory mount must serve its trailing-slash index and adjacent relative assets.
 Do not serve the repository root, tests, internal tooling or artifacts directory.
 Confirm unknown-path 404 behavior and preserve other routes on an existing host.
@@ -22,4 +27,4 @@ Hosting receives page/asset requests and may keep access logs; describe the chos
 host's processing and operator/contact information accurately. Retain the previous
 static package for rollback. The app has no stored user data to migrate.
 
-The shared home is tools.arcdrake.com. Source publication and production hosting are separate; see [RELEASING.md](RELEASING.md).
+The planned shared home is tools.arcdrake.com. Source publication and production hosting are separate; see [RELEASING.md](RELEASING.md).
