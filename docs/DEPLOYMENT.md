@@ -1,30 +1,23 @@
-# Static deployment
+# Static hosting
 
-For local package inspection, run `npm test`, the browser checks described in [README](../README.md),
-then `python tools/package-release.py` (Python 3.11+). The resulting
-`artifacts/release/static-release.zip` contains exactly four application files,
-LICENSE and THIRD_PARTY_NOTICES.md; manifest.json records archive/per-file hashes.
-Packaging needs no dependency installation. Browser checks require the locked
-Playwright dependency and browser installation documented in README. Runtime use
-requires no backend, database or account.
+The hosted application is available at [tools.arcdrake.com/unpack/](https://tools.arcdrake.com/unpack/). To host your own copy, build a package using [these instructions](RELEASING.md).
 
-For production, use only the retained **Prepare release artifact** workflow output
-for the approved main commit, following [RELEASING.md](RELEASING.md). Local packages
-are for inspection, not production deployment. Serve the unpacked approved static
-package over HTTPS from its own root or directory.
-A directory mount must serve its trailing-slash index and adjacent relative assets.
-Do not serve the repository root, tests, internal tooling or artifacts directory.
-Confirm unknown-path 404 behavior and preserve other routes on an existing host.
+## Files and paths
 
-Set X-Content-Type-Options: nosniff and Referrer-Policy: no-referrer. Keep the
-application's current CSP, restrict framing through host headers, and use
-revalidated HTML/consistent asset caching. No service worker is installed.
-The URL inspector's connect-src remains 'none'; never fetch inspected URLs. Clipboard access requires HTTPS or a supported loopback secure context.
+Extract `artifacts/release/static-release.zip`. It contains five application files: `index.html`, `style.css`, `app.js`, `anatomy.js` and `language.js`, plus `LICENSE` and `THIRD_PARTY_NOTICES.md`. A separate `manifest.json` records archive and per-file SHA-256 hashes.
 
-After deployment compare per-file hashes with the manifest, inspect security
-headers and desktop/mobile behavior, and verify the actual origin-specific flow.
-Hosting receives page/asset requests and may keep access logs; describe the chosen
-host's processing and operator/contact information accurately. Retain the previous
-static package for rollback. The app has no stored user data to migrate.
+Serve the extracted static files over HTTPS from a root or directory, preserving relative asset paths. A directory mount must serve its trailing-slash index. Do not serve the repository root, tests or development tools. No application backend, database or account system is required.
 
-The planned shared home is tools.arcdrake.com. Source publication and production hosting are separate; see [RELEASING.md](RELEASING.md).
+## Host configuration
+
+Keep the application's Content Security Policy. Set `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`, and configure framing restrictions appropriate to your host. Revalidate HTML and avoid serving stale assets from another version.
+
+Keep `connect-src 'none'`; the inspector must not fetch submitted URLs. Clipboard access requires HTTPS or a supported loopback secure context. A denied clipboard request should still allow manual copying.
+
+No service worker is installed. Language preference storage belongs to the current origin.
+
+## Check your deployment
+
+Verify file hashes against the manifest, unknown-path 404 responses, asset loading, security headers, narrow layouts and English/German controls. Check URL inspection and both clipboard and manual copying.
+
+Hosting receives ordinary page and asset requests and may keep access logs. Describe the host's processing and operator/contact information accurately. Keep the previous package and manifest if you need to restore an earlier version.

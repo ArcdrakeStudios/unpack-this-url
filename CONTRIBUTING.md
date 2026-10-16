@@ -1,35 +1,33 @@
 # Contributing
 
-Please open an issue before a substantial change. Small, focused fixes are welcome.
-Fork the repository, create a branch and submit a pull request against `main`.
-Use synthetic inputs in reports, screenshots and tests; do not post private data.
+Small, focused fixes are welcome. Open an issue before a substantial change so we can discuss the intended behavior. Fork the repository, create a branch and submit a pull request against `main`.
 
-Use Node.js 24 and Python 3.11 or newer. Install development tools with `npm ci`, then run:
+## Development checks
+
+Follow the prerequisites in the [README](README.md), then run:
 
 ```sh
+npm ci
 npx playwright install chromium
 npm test
 npm run test:ci
+npm run test:localization
 npm run package:release
 ```
 
-On Linux, `npx playwright install --with-deps chromium` installs required browser
-libraries. CI uses disposable GitHub-hosted runners. Maintainer approval is needed
-before an outside contributor's workflow runs; approval is not a code review.
+On Linux, `npx playwright install --with-deps chromium` also installs required browser libraries. Browser tests start and stop their own preview servers; leave the app's preview port free.
 
-Keep the app dependency-light and preserve its documented privacy and scope.
-Include a regression check for behavioral fixes and explain verification limits.
-Review must cover code, public copy, dependency rights and screenshots. Contributions
-are provided under the repository's MIT license. Be respectful and constructive.
+## Preparing a pull request
 
-## Maintainer workflow
+Explain the user-visible problem, the change and how you checked it. Add a regression test for behavioral fixes when practical, and keep documentation and both interface languages consistent with the application.
 
-Main requires a pull request, passing `verify` CI, resolved conversations and linear
-history. Squash merge approved changes. Force pushes and branch deletion are blocked.
-CODEOWNERS assigns review to @SirDragonheart. A separate review rule requires one
-approval, with a PR-only exception for the owner account: founder-authored PRs must
-record independent Claude review and resolved findings before that exception is used.
-The exception does not bypass CI or permit direct pushes. GitHub enforces the checks;
-the independent-review evidence requirement is a maintainer procedure.
+Preserve the documented privacy boundaries and keep runtime dependencies minimal. Use fictional inputs in issues, tests and screenshots. Never post private data or credentials.
 
-See [release procedure](docs/RELEASING.md) and [security reporting](SECURITY.md).
+Pull requests must pass the required CI check before merging. Contributor pull requests are reviewed by a maintainer. A maintainer may need to approve a contributor's workflow run before checks begin.
+
+Contributions are provided under the repository's MIT license. Be respectful and constructive.
+
+See [packaging and hosting](docs/RELEASING.md), [language support](docs/LOCALIZATION.md) and [security reporting](SECURITY.md).
+
+Accepted changes can be included in future updates to the hosted app. Deployment
+is managed separately from pull request merging.
