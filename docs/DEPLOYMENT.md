@@ -21,3 +21,5 @@ No service worker is installed. Language and usage-count preference storage belo
 Verify file hashes against the manifest, unknown-path 404 responses, asset loading, security headers, narrow layouts and English/German controls. Check URL inspection and both clipboard and manual copying.
 
 Hosting receives ordinary page and asset requests and may keep access logs. Describe the host's processing and operator/contact information accurately. Keep the previous package and manifest if you need to restore an earlier version.
+
+The canonical consent style block is permitted by its exact SHA-256 (`sha256-VHXTEYUc0+/a/3/pxtfczPbGydBF1J/t2RF/LB9heIo=`), alongside same-origin styles. All intersecting host style-src policies need the same exact token; never substitute unsafe-inline. The CSP regression hashes the immutable copied source block and verifies the permission. Other directives remain unchanged.

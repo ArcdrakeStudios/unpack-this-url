@@ -1,4 +1,4 @@
-import { mountMeasurementFeedback, NOTICES } from './measurement-feedback-client.mjs';
+import { mountMeasurementFeedback } from './measurement-feedback-client.mjs';
 import { EVENTS } from './measurement-contract.mjs';
 import { COLLECTION_ENABLED } from './feedback-config.js';
 import { getLanguage } from './language.js';
@@ -17,8 +17,6 @@ export function mountUnpackFeedback(container, { enabled = false, ...options } =
       if (!EVENTS.includes(event)) throw new TypeError('Unknown event');
       return { ok: true, skipped: true };
     };
-    const allow = [...container.querySelectorAll('button')].find(button => button.textContent === NOTICES.en.allow);
-    allow.disabled = true;
     ui.refreshChoice();
   }
   return ui;
@@ -36,4 +34,7 @@ function refreshLinks() {
 }
 refreshLinks();
 window.addEventListener('arcdrake-language-change', refreshLinks);
+// The app may select ?lang=de before this widget exists. Announce that initial
+// choice after mounting so the native consent dialog uses the same locale.
+window.dispatchEvent(new CustomEvent('arcdrake-language-change', { detail: { language: getLanguage() } }));
 void measurement.track('page_view');

@@ -7,6 +7,7 @@ let saved;try{saved=localStorage.getItem(KEY);}catch{}
 language=['de','en'].includes(explicit)?explicit:['de','en'].includes(saved)?saved:navigator.language.toLowerCase().startsWith('de')?'de':'en';
 const sources=new WeakMap(), attributes=new WeakMap();
 const entries=[
+ ["Feedback service may be unavailable on this page.", "Der Feedbackdienst ist auf dieser Seite möglicherweise nicht verfügbar."],
  ['{0} query entries match common tracking names. Removing them is optional.', '{0} Abfrageeinträge entsprechen üblichen Tracking-Namen. Das Entfernen ist optional.'],
  ['{0} nested links expanded at the first level. Open all URL details to inspect their hosts.', '{0} verschachtelte Links auf der ersten Ebene aufgeschlüsselt. Öffne alle URL-Details, um ihre Hosts zu prüfen.'],
  ...Object.keys(NOTICES.en).map(key => [NOTICES.en[key], NOTICES.de[key]]),
@@ -15,7 +16,7 @@ const entries=[
  [NOTICES.en.sent + '{0}', NOTICES.de.sent + '{0}'],
  ['URL inspection stays on your device', 'URL-Prüfung bleibt auf deinem Gerät'],
  ['All URL details: anatomy, query entries and nested links', 'Alle URL-Details: Aufbau, Abfrageeinträge und verschachtelte Links'],
- ['Feedback & optional usage counts', 'Feedback und optionale Nutzungszählung'],
+ ['Feedback', 'Feedback'],
  ['Feedback and usage counts are unavailable on this page. URL inspection works independently. You can draft feedback or use the contact link; drafts are not saved.', 'Feedback und Nutzungszählungen sind auf dieser Seite nicht verfügbar. Die URL-Prüfung funktioniert unabhängig davon. Du kannst Feedback entwerfen oder den Kontaktlink nutzen; Entwürfe werden nicht gespeichert.'],
  ['Entered URLs and results are not sent or saved. Optional counts send only product and action type after consent; feedback sends only when you press Send feedback. Language and usage-count choices may be stored. Clear removes the current URL input and results, not a feedback draft or your browser clipboard.', 'Eingegebene URLs und Ergebnisse werden weder gesendet noch gespeichert. Optionale Zählungen senden erst nach Zustimmung Produktcode und Aktionsart; Feedback wird erst mit „Feedback senden“ übertragen. Sprach- und Zählungsauswahl können gespeichert werden. „Leeren“ entfernt die aktuelle URL-Eingabe und Ergebnisse; ein Feedbackentwurf und die Zwischenablage bleiben bestehen.'],
  [
