@@ -10,9 +10,7 @@ try{
  let dnsQueries=0, fontCSS='';
  await context.route('https://cloudflare-dns.com/**',async route=>{dnsQueries++;await route.fulfill({json:{Status:0,Answer:[]}});});
  await context.route('http://local.test/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').pop()||'index.html';const data=await readFile(new URL(name,root));await route.fulfill({body:name.endsWith('.css')?Buffer.concat([data,Buffer.from('\n'+fontCSS)]):data,contentType:/\.m?js$/.test(name)?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
- await page.goto('http://local.test/?lang=de');
-  await page.getByRole('dialog').getByRole('button', {name:/Continue without usage counts|Ohne Nutzungszählung fortfahren/}).click();
-await page.locator('[data-app-language="de"]').waitFor();
+ await page.goto('http://local.test/?lang=de');await page.locator('[data-app-language="de"]').waitFor();
  assert.equal(await page.locator('html').getAttribute('lang'),'de');
  assert.equal(await page.evaluate(async()=>{const {translate}=await import('/language.js');const el=document.createElement('p');el.textContent='Remove query entry 1: $&$1';document.body.append(el);await new Promise(r=>setTimeout(r,0));const output=el.textContent;el.remove();return translate('Remove query entry 1: $&$1')===output&&output.endsWith('$&$1');}),true);
  const app='unpack-this-url';

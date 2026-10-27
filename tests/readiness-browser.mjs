@@ -20,8 +20,6 @@ try {
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const requests=[];page.on('request',r=>requests.push(r.url()));
  await page.goto('http://127.0.0.1:43218');
-  await page.getByRole('dialog').getByRole('button', {name:/Continue without usage counts|Ohne Nutzungszählung fortfahren/}).click();
-
  await page.locator('#example').click();
  for(const id of ['remove-tracking','remove-credentials','remove-fragment']) await page.locator('#'+id).check();
  const expected='https://xn--bcher-kva.example:8443/read?tag=one&tag=two&next=https%3A%2F%2Fexample.org%2Fwelcome%3Fx%3D1';
