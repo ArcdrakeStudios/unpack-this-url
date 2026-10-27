@@ -4,8 +4,7 @@ The shipped `feedback-config.js` sets `COLLECTION_ENABLED = false`. All normal
 collection flows are disabled: no page/action event or explicit feedback send
 can make an API request, even with an existing opt-in. The visible EN/DE notice
 says feedback and counts are unavailable on this page; inspection works
-independently. Allow is disabled, Off can revoke an earlier choice, and explicit
-Send returns unavailable locally while retaining the draft. This is an
+independently. No consent window is offered while this build is disabled, and explicit Send returns unavailable locally while retaining the draft. An earlier saved preference cannot override this build switch. This is an
 availability state, not a claim about the build location. No probing or polling.
 
 Only a separately verified host release may set the switch to `true`. That
@@ -22,8 +21,7 @@ Opening the form may count `feedback_open` after consent; it never sends feedbac
 There are no URLs, query strings, results, identifiers or metadata in counts.
 
 Counts default off. Every event rechecks the origin-wide
-`arcdrake.analytics.v1` yes/no preference and GPC/DNT. Both allow and off controls
-stay visible. Blocked storage uses a choice for this page, with a visible warning
+`arcdrake.analytics.v1` yes/no preference and GPC/DNT. Allow and decline controls are available in the separate privacy choices window. Blocked storage uses a choice for this page, with a visible warning
 that an uncleared earlier opt-in may survive reload or in another tab. A failed
 opt-out write best-effort removes stale permission and gates other same-page
 clients. Persisted cross-tab denial is rechecked on every event. Counts
@@ -42,10 +40,8 @@ The recipient is Arcdrake; authorized triage operators and agents can access
 feedback until exactly 30 days after sending. Expired rows are hidden immediately
 and purged hourly from active storage, subject to platform failure. Daily totals
 cover the current UTC day plus the previous 89 days. Provider backups/recovery
-have separate retention; exported feedback must be access-restricted and deleted
-by its expiry or earlier on a deletion request. Keep the receipt ID for deletion
-through the existing company contact route. These details are visible in EN/DE
-in the form, alongside existing Tools privacy and company contact links.
+have separate retention. Earlier records/copies retain their original deletion commitments; the prospective policy below applies to revised-notice submissions only. Keep the receipt ID for deletion
+through the existing company contact route. The form stays brief and links the complete EN/DE Tools privacy notice and company contact route.
 
 ## Host integration
 
@@ -58,7 +54,7 @@ browser to call another origin. `connect-src 'self'` permits these API calls;
 the inspector does not use networking to inspect destinations.
 
 Events accept only `{product:'unpack',event:<allowlisted action>}`. Feedback
-accepts only `{product:'unpack',category,message,replyTo?}`. Successful writes
+accepts only `{product:'unpack',category,message,replyTo?,noticeVersion:"2026-10-27-mail-v1"}`. Successful writes
 require HTTP 202 with exactly `{ok:true}` for events or `{ok:true,id}` with a
 UUIDv4 receipt for feedback. Error responses must have exactly `ok:false` and
 `error`, with the matching status/code pair. Error responses
@@ -101,8 +97,20 @@ Activation requires a separately authorized host release: update EN/DE host
 privacy copy, confirm provider limits and backup retention, supply the reviewed
 namespace/migration, secret bindings and origin map, bind the original-request
 hosting wrapper, and verify bounded synthetic writes/triage/deletion plus
-retention/alarm behavior. Keep the full UI notices. Review final EN/DE browser
+retention/alarm behavior. Keep the brief form and complete linked privacy notices consistent. Review final EN/DE browser
 UX and security headers at that stage, then enable the release switch and
 rebuild the package/manifest together. A static upload alone cannot activate
 the API. Roll back client intake and forwarding together; retain cleanup for
 any existing stored feedback. No activation is performed by packaging.
+
+## Consent and feedback notice update — 27 October 2026
+
+This private source candidate copies the reviewed canonical shared client/contract from consent source `d8c50c8`. Both copied modules are explicitly LF in `.gitattributes` to preserve byte parity across checkouts. No production push, API activation or deployment is included. Local task behavior and privacy gates remain intact.
+
+The feedback area has a short intro and fields; analytics detail and equally usable allow/decline controls live in the separate branded Privacy choices window. Existing EN/DE privacy/contact links remain. The current client adds exact `noticeVersion: "2026-10-27-mail-v1"` to explicit feedback payloads. This identifies its notice version, not proof that a human read it. An old tab/client without the marker remains storage-only forever; it cannot be replayed into mail.
+
+For revised-notice submissions the website working copy still expires after 30 days, with hourly cleanup under normal operation. Feedback also queues for forwarding through the existing Microsoft 365 transport to Arcdrake's business mailbox. Mailbox correspondence is deleted when no longer needed, subject to statutory obligations or necessary legal claims. A saved receipt confirms website storage/queueing, never inbox delivery or a human response. Existing collected records and exports/copies retain the original promises under which they were collected; there is no retroactive exemption or new manual mailbox/export deletion duty.
+
+Host release must first accept the optional marker with `FEEDBACK_MAIL_ACTIVE="0"`, then supply the existing private mail entrypoint/binding and deploy all revised notices/client adapters. Verify service bindings and Operations Control delivery health before explicitly activating dispatch last. Marker-tagged messages queue while off without transport attempts; old/unmarked records remain legacy. Keep the deliberate active setting in later reviewed deployment configs. Standalone builds with a disabled collection switch remain disabled.
+
+Candidate verification: `npm test` passed 66 tests. Shared client/contract byte parity matches the canonical LF Git blobs; source hashes are pinned where required. The local release package/build completed. No browser, physical-device, live backend or inbox verification is claimed by this source-propagation packet.

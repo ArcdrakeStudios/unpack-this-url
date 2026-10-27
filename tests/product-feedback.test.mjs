@@ -122,12 +122,12 @@ test('actual feedback adapter sends no unsolicited feedback and keeps drafts dur
   message.value = 'A voluntary draft'; category.value = 'usability';
   f.setLanguage('de');
   assert.equal(message.value, 'A voluntary draft'); assert.equal(form.hidden, false);
-  assert.deepEqual(container.querySelectorAll('a').map(node => node.href), [
+  assert.deepEqual(container.querySelectorAll('a').slice(0, 2).map(node => node.href), [
     'https://tools.arcdrake.com/de/privacy/', 'https://arcdrake.com/de/contact/',
   ]);
   await form.listeners.submit({ preventDefault() {} });
   assert.equal(calls.length, 1); assert.equal(calls[0].path, '/api/feedback');
-  assert.deepEqual(JSON.parse(calls[0].options.body), { product: 'unpack', category: 'usability', message: 'A voluntary draft' });
+  assert.deepEqual(JSON.parse(calls[0].options.body), { product: 'unpack', category: 'usability', message: 'A voluntary draft', noticeVersion: '2026-10-27-mail-v1' });
   assert.equal(message.value, 'A voluntary draft');
   assert.ok(all.some(node => node.textContent === NOTICES.en.unavailable));
 });
@@ -199,7 +199,7 @@ test('release config disables every collection flow even with saved consent and 
   assert.equal(f.nodes.get('main-host').textContent, 'private.example');
   assert.equal(f.measurement.choice(), 'no');
   const all = f.nodes.get('measurement-feedback').querySelectorAll('*');
-  assert.equal(all.find(node => node.textContent === NOTICES.en.allow).disabled, true);
+  assert.equal(all.some(node => node.textContent === NOTICES.en.allow), false);
   all.find(node => node.textContent === NOTICES.en.open).listeners.click();
   const message = all.find(node => node.tag === 'textarea');
   message.value = 'A draft that must stay local';
@@ -208,9 +208,8 @@ test('release config disables every collection flow even with saved consent and 
   assert.equal(f.calls.length, 0);
   assert.equal(message.value, 'A draft that must stay local');
   assert.ok(all.some(node => node.textContent === NOTICES.en.unavailable));
-  // Off still revokes earlier shared permission; disabling intake is not opt-out.
-  all.find(node => node.textContent === NOTICES.en.deny).listeners.click();
-  assert.equal(stored.get('arcdrake.analytics.v1'), 'no');
+  // A saved preference cannot trigger intake in a disabled build.
+  assert.equal(stored.get('arcdrake.analytics.v1'), 'yes');
   await assert.rejects(f.measurement.track('not_allowlisted'), /Unknown event/);
 });
 

@@ -2,3 +2,6 @@
 *.png binary
 *.jpg binary
 *.webp binary
+# Keep reviewed shared browser sources byte-identical across platforms.
+dist/measurement-contract.mjs text eol=lf
+dist/measurement-feedback-client.mjs text eol=lf
