@@ -1,3 +1,4 @@
+import { NOTICES } from './measurement-feedback-client.mjs';
 // Local, bundled translations. User input and protocol evidence are never translated.
 const KEY='arcdrake-tools-language';
 let language='en';
@@ -6,6 +7,17 @@ let saved;try{saved=localStorage.getItem(KEY);}catch{}
 language=['de','en'].includes(explicit)?explicit:['de','en'].includes(saved)?saved:navigator.language.toLowerCase().startsWith('de')?'de':'en';
 const sources=new WeakMap(), attributes=new WeakMap();
 const entries=[
+ ['{0} query entries match common tracking names. Removing them is optional.', '{0} Abfrageeinträge entsprechen üblichen Tracking-Namen. Das Entfernen ist optional.'],
+ ['{0} nested links expanded at the first level. Open all URL details to inspect their hosts.', '{0} verschachtelte Links auf der ersten Ebene aufgeschlüsselt. Öffne alle URL-Details, um ihre Hosts zu prüfen.'],
+ ...Object.keys(NOTICES.en).map(key => [NOTICES.en[key], NOTICES.de[key]]),
+ ...['on', 'off', 'blocked'].map(key => [NOTICES.en[key] + ' ' + NOTICES.en.pageOnly, NOTICES.de[key] + ' ' + NOTICES.de.pageOnly]),
+ ['Optional usage counts and voluntary feedback use this site’s service. If a send cannot be confirmed, your text stays in the form. URL inspection works independently.', 'Optionale Nutzungszählungen und freiwilliges Feedback nutzen den Dienst dieser Website. Wenn der Empfang nicht bestätigt werden kann, bleibt dein Text im Formular. Die URL-Prüfung funktioniert unabhängig davon.'],
+ [NOTICES.en.sent + '{0}', NOTICES.de.sent + '{0}'],
+ ['URL inspection stays on your device', 'URL-Prüfung bleibt auf deinem Gerät'],
+ ['All URL details: anatomy, query entries and nested links', 'Alle URL-Details: Aufbau, Abfrageeinträge und verschachtelte Links'],
+ ['Feedback & optional usage counts', 'Feedback und optionale Nutzungszählung'],
+ ['Feedback and usage counts are unavailable on this page. URL inspection works independently. You can draft feedback or use the contact link; drafts are not saved.', 'Feedback und Nutzungszählungen sind auf dieser Seite nicht verfügbar. Die URL-Prüfung funktioniert unabhängig davon. Du kannst Feedback entwerfen oder den Kontaktlink nutzen; Entwürfe werden nicht gespeichert.'],
+ ['Entered URLs and results are not sent or saved. Optional counts send only product and action type after consent; feedback sends only when you press Send feedback. Language and usage-count choices may be stored. Clear removes the current URL input and results, not a feedback draft or your browser clipboard.', 'Eingegebene URLs und Ergebnisse werden weder gesendet noch gespeichert. Optionale Zählungen senden erst nach Zustimmung Produktcode und Aktionsart; Feedback wird erst mit „Feedback senden“ übertragen. Sprach- und Zählungsauswahl können gespeichert werden. „Leeren“ entfernt die aktuelle URL-Eingabe und Ergebnisse; ein Feedbackentwurf und die Zwischenablage bleiben bestehen.'],
  [
   "Unpack This URL — see what’s inside",
   "Unpack This URL — den Aufbau verstehen"
@@ -17,10 +29,6 @@ const entries=[
  [
   "Skip to URL input",
   "Zur URL-Eingabe springen"
- ],
- [
-  "On your device · no requests",
-  "Auf deinem Gerät · keine Anfragen"
  ],
  [
   "A little clarity before the click",
@@ -181,10 +189,6 @@ const entries=[
  [
   "Built to make URL structure legible.",
   "Damit URL-Strukturen lesbar werden."
- ],
- [
-  "No analytics, submitted-link requests or saved history. Only the language preference is stored. Clear removes this page’s current input; your browser or clipboard may retain text independently.",
-  "Keine Analyse, Anfragen an eingegebene Links oder gespeicherter Verlauf. Nur die Sprachwahl wird gespeichert. „Leeren“ entfernt die aktuelle Eingabe; Browser oder Zwischenablage können Text unabhängig davon behalten."
  ],
  [
   "(absent / empty)",
@@ -432,7 +436,7 @@ function text(node){const old=sources.get(node);const value=node.nodeValue;if(ol
 function refresh(){observer.disconnect();const walker=document.createTreeWalker(document.documentElement,NodeFilter.SHOW_TEXT);while(walker.nextNode()){const n=walker.currentNode;if(!n.parentElement.closest('script,style,textarea,pre,[data-l10n-raw]:not([data-l10n-raw="false"]),.arcdrake-collection-nav'))text(n);}for(const el of document.querySelectorAll('[aria-label],[placeholder],meta[name="description"]')){if(el.closest('[data-l10n-raw]:not([data-l10n-raw="false"]),.arcdrake-collection-nav'))continue;let saved=attributes.get(el);if(!saved){saved={};attributes.set(el,saved);}for(const attr of ['aria-label','placeholder',...(el.matches('meta')?['content']:[])]){if(!el.hasAttribute(attr))continue;const value=el.getAttribute(attr);const old=saved[attr];const source=old&&value===old.output?old.source:value;const output=translate(source);saved[attr]={source,output};el.setAttribute(attr,output);}}document.documentElement.lang=language;for(const b of document.querySelectorAll('[data-app-language]'))b.setAttribute('aria-pressed',String(b.dataset.appLanguage===language));observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true});}
 const observer=new MutationObserver(refresh);
 function setLanguage(next,announce=false){if(!['de','en'].includes(next))return;language=next;try{localStorage.setItem(KEY,next);}catch{}try{const url=new URL(location.href);url.searchParams.set('lang',next);history.replaceState(history.state,'',url);}catch{}refresh();if(announce)window.dispatchEvent(new CustomEvent('arcdrake-language-change',{detail:{language:next}}));}
-const control=document.createElement('nav');control.className='language-switch';control.setAttribute('aria-label','Language / Sprache');control.innerHTML='<button type="button" data-app-language="en" lang="en">English</button><button type="button" data-app-language="de" lang="de">Deutsch</button>';
+const control=document.createElement('nav');control.className='language-switch';control.setAttribute('aria-label','Language / Sprache');for(const [value,label] of [['en','English'],['de','Deutsch']]){const button=document.createElement('button');button.type='button';button.dataset.appLanguage=value;button.lang=value;button.textContent=label;control.append(button);}
 document.querySelector('header').append(control);control.addEventListener('click',e=>{if(e.target.dataset.appLanguage)setLanguage(e.target.dataset.appLanguage,true);});
 window.addEventListener('arcdrake-language-change',e=>setLanguage(e.detail?.language));
 refresh();

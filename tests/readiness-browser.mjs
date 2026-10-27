@@ -27,7 +27,7 @@ try {
  await page.locator('#copy').click();
  assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),expected);
  results.push('Actual Chromium clipboard read equals exact transformed preview');
- assert.equal(await page.locator('a').count(),1);assert(requests.every(u=>u.startsWith('http://127.0.0.1:43218/')));
+ assert.deepEqual(await page.locator('a').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('href'))), ['#url-input', 'https://tools.arcdrake.com/privacy/', 'https://arcdrake.com/contact/']);assert(requests.every(u=>u.startsWith('http://127.0.0.1:43218/')));
  results.push('Submitted URLs remain inert; only local page/assets requested');
  await page.screenshot({path:fileURLToPath(new URL(screenshotFolder+'screenshot-desktop.png',import.meta.url)),fullPage:true});
  await page.setViewportSize({width:390,height:844});

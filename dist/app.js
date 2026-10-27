@@ -1,4 +1,5 @@
 import './language.js';
+import { measurement } from './feedback.js';
 import { inspect, sanitize } from './anatomy.js'
 const $ = id => document.getElementById(id)
 let current = null
@@ -32,7 +33,11 @@ function show(result) {
   $('host-explanation').textContent = result.username || result.password ? 'Read after the @. The text before it is user information, even if it looks like another website.' : 'Read the host separately from the path and query. Names elsewhere in the URL do not change this host.'
   $('host-forms').replaceChildren()
   if (result.unicodeHost !== result.host) { const forms = element('dl', '', 'anatomy'); field(forms, 'ASCII / punycode', result.host); field(forms, 'Unicode display', result.unicodeHost); $('host-forms').append(forms) }
-  $('warning-list').replaceChildren(...result.warnings.map(text => element('li', text))); $('warnings').hidden = !result.warnings.length
+  const observations = [...result.warnings]
+  const tracking = result.queries.filter(query => query.tracking).length
+  if (tracking) observations.push(`${tracking} query entries match common tracking names. Removing them is optional.`)
+  if (result.nested.length) observations.push(`${result.nested.length} nested links expanded at the first level. Open all URL details to inspect their hosts.`)
+  $('warning-list').replaceChildren(...observations.map(text => element('li', text))); $('warnings').hidden = !observations.length
   const anatomy = $('anatomy'); anatomy.replaceChildren()
   for (const [name, value] of [['Scheme (original)', result.raw.scheme], ['Scheme (parsed)', result.scheme], ['Host (parsed)', result.host], ['Port (original)', result.raw.port], ['Port (parsed)', result.port], ['Origin (parsed)', result.origin], ['Authority (original)', result.raw.authority], ['User information (original)', result.raw.userinfo], ['Username (encoded)', result.username], ['Password (encoded)', result.password], ['Path (original)', result.raw.path], ['Path (parsed)', result.path], ['Query (original)', result.query], ['Fragment (original)', result.fragment]]) field(anatomy, name, value)
   $('original').value = result.original; $('normalized').value = result.normalized
@@ -55,7 +60,7 @@ function show(result) {
   preview(); $('status').textContent = 'Unpacked on this device. No URL was opened.'
   $('host-heading').setAttribute('tabindex', '-1'); $('host-heading').focus()
 }
-$('inspect-form').addEventListener('submit', event => { event.preventDefault(); clearResult(); try { show(inspect($('url-input').value)) } catch (error) { $('error').textContent = error.message; $('error').hidden = false; $('status').textContent = ''; $('url-input').focus() } })
+$('inspect-form').addEventListener('submit', event => { event.preventDefault(); clearResult(); void measurement.track('tool_start'); try { show(inspect($('url-input').value)); void measurement.track('tool_complete') } catch (error) { $('error').textContent = error.message; $('error').hidden = false; $('status').textContent = ''; $('url-input').focus() } })
 $('url-input').addEventListener('input', () => { clearResult(); $('status').textContent = 'Input changed. Unpack again to update the analysis.' })
 $('url-input').addEventListener('keydown', event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); $('inspect-form').requestSubmit() } })
 $('example').addEventListener('click', () => { $('url-input').value = 'https://familiar.example@xn--bcher-kva.example:8443/read?tag=one&tag=two&utm_source=newsletter&next=https%3A%2F%2Fexample.org%2Fwelcome%3Fx%3D1#chapter-2'; $('inspect-form').requestSubmit() })

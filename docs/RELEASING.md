@@ -12,7 +12,7 @@ npm run package:release
 
 Python 3.11 or newer must be available as `python`, the command used by the npm script. Check `python --version`; if only `python3` is available, configure your Python installation or PATH before using the npm command. The command creates `artifacts/release/static-release.zip` and a separate `manifest.json` with archive and per-file SHA-256 hashes.
 
-The application files are `index.html`, `style.css`, `app.js`, `anatomy.js` and `language.js`. The package also includes `LICENSE` and `THIRD_PARTY_NOTICES.md`; retain these when redistributing it. Packaging does not download dependencies, upload files or configure hosting.
+The nine application files are `index.html`, `style.css`, `app.js`, `anatomy.js`, `language.js`, `feedback.js`, `feedback-config.js`, `measurement-feedback-client.mjs` and `measurement-contract.mjs`. The package also includes `LICENSE` and `THIRD_PARTY_NOTICES.md`; retain these when redistributing it. Packaging does not download dependencies, upload files, configure hosting or activate optional collection. The release switch is disabled. See [feedback integration](MEASUREMENT-FEEDBACK.md).
 
 The **Prepare release artifact** GitHub Actions workflow runs on `main` when dispatched by a maintainer. It repeats the checks and uploads an artifact named with the source commit. GitHub keeps these workflow artifacts for 30 days; they are not permanent release downloads.
 
