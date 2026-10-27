@@ -10,8 +10,8 @@ export const RELEASE_FILES = ['index.html', 'style.css', 'app.js', 'anatomy.js',
 // payloads and store the yes/no preference. Keep inspector modules under the
 // existing network/storage prohibition. Re-review any shared source update.
 const SHARED_HASHES = {
-  'measurement-feedback-client.mjs': '125ee64371df50ed105ad242206a70d79d4ca5be47cbbbf0e0b450d6515d23c2',
-  'measurement-contract.mjs': '0f9ea2ee2d929cc8c9fab64e49ad4b3d30b3f056f59a44871b69c191096c2082',
+  'measurement-feedback-client.mjs': 'ad5e577b0ed829764d3d70cedc920d88ae275e769c269bbc62d4095fab630942',
+  'measurement-contract.mjs': '202ba398136f1feb9010340140e131210ed6966a692291aebaf7f4834dc7011e',
 }
 
 // Exact reviewed exceptions: preference changes require deliberate review here and
