@@ -30,24 +30,41 @@ class Element {
   reset() { for (const node of this.querySelectorAll('*')) if (['input', 'textarea'].includes(node.tag)) node.value = ''; }
   set innerHTML(_value) { assert.fail('Unsafe HTML rendering'); }
 }
-function documentFixture() {
+function documentFixture({ nativeDialog = false } = {}) {
   const nodes = new Map();
-  const doc = { createElement: tag => new Element(tag, doc), getElementById: id => nodes.get(id) };
+  const doc = { createElement: tag => {
+    const element = new Element(tag, doc);
+    if (nativeDialog && tag === 'dialog') {
+      element.showModal = () => { element.open = true; };
+      element.close = () => { element.open = false; };
+    }
+    return element;
+  }, getElementById: id => nodes.get(id) };
+  if (nativeDialog) { doc.body = new Element('body', doc); doc.head = new Element('head', doc); }
   for (const match of html.matchAll(/<([a-z]+)[^>]*\bid="([^"]+)"/g)) nodes.set(match[2], new Element(match[1], doc));
   return { doc, nodes };
 }
-function feedbackFixture({ enabled = COLLECTION_ENABLED, options = {} } = {}) {
-  const { doc, nodes } = documentFixture(), listeners = {};
-  let language = 'en';
+function feedbackFixture({ enabled = COLLECTION_ENABLED, options = {}, initialLanguage = 'en', nativeDialog = false } = {}) {
+  const { doc, nodes } = documentFixture({ nativeDialog }), listeners = {};
+  let language = initialLanguage;
+  const view = {
+    addEventListener(name, fn) { (listeners[name] ??= []).push(fn); },
+    removeEventListener(name, fn) { listeners[name] = (listeners[name] ?? []).filter(listener => listener !== fn); },
+    dispatchEvent(event) { for (const listener of listeners[event.type] ?? []) listener(event); },
+  };
+  doc.defaultView = view;
+  class LocalEvent { constructor(type, options) { this.type = type; this.detail = options.detail; } }
   const context = { document: doc, COLLECTION_ENABLED: enabled, EVENTS, NOTICES,
-    getLanguage: () => language,
+    getLanguage: () => language, CustomEvent: LocalEvent,
     mountMeasurementFeedback: (container, supplied) => mountMeasurementFeedback(container, {
       storage: null, privacy: {}, ...options, ...supplied,
     }),
-    window: { addEventListener: (name, fn) => { listeners[name] = fn; } },
+    window: view,
   };
   runInNewContext(adapter.replace(/^import .*$/gm, '').replace(/^export /gm, '') + '\nglobalThis.ui = ui;', context);
-  return { doc, nodes, ui: context.ui, setLanguage(value) { language = value; listeners['arcdrake-language-change'](); } };
+  return { doc, nodes, ui: context.ui, setLanguage(value) {
+    language = value; view.dispatchEvent(new LocalEvent('arcdrake-language-change', { detail: { language } }));
+  } };
 }
 function productFixture({ consent = false, privacy = {}, unavailable = false, enabled = true, fetchImpl, storage = null } = {}) {
   const calls = [];
@@ -270,4 +287,41 @@ test('explicitly enabled real inspector and feedback use the repaired client/API
   backend.advanceDays(91);
   await backend.read('/api/triage/retention', { method: 'POST' });
   assert.deepEqual([...(await backend.inspect()).keys()], ['nextSweep']);
+});
+
+
+test('initial German locale and later switches localize the native consent window without resetting draft or permission', () => {
+  const saved = new Map();
+  const storage = { getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value) };
+  const f = feedbackFixture({ enabled: true, initialLanguage: 'de', nativeDialog: true, options: { storage } });
+  const container = f.nodes.get('measurement-feedback');
+  const dialog = f.doc.body.children.find(node => node.tag === 'dialog');
+  const form = container.querySelectorAll('form')[0];
+  const message = container.querySelectorAll('textarea')[0];
+  const email = container.querySelectorAll('input')[0];
+  message.value = 'Unsaved report'; email.value = 'optional@example.test';
+  const assertLocale = language => {
+    const all = dialog.querySelectorAll('*');
+    assert.equal(dialog.lang, language);
+    assert.equal(all.find(node => node.tag === 'h2').textContent, language === 'de' ? 'Datenschutzeinstellungen' : 'Privacy choices');
+    assert.match(all.find(node => node.tag === 'p').textContent, language === 'de' ? /möchte mit deiner Einwilligung/ : /would like your consent/);
+    assert.equal(all.find(node => node.tag === 'summary').textContent, language === 'de' ? 'Was wird verarbeitet und gespeichert?' : 'What is processed and stored?');
+    assert.equal(all.filter(node => node.tag === 'p')[1].textContent, NOTICES[language].analytics);
+    assert.equal(all.find(node => node.tag === 'button').textContent, language === 'de' ? 'Ohne Nutzungszählung' : 'No usage counts');
+    assert.equal(all.find(node => node.tag === 'a').href, `https://tools.arcdrake.com/${language === 'de' ? 'de/' : ''}privacy/`);
+    assert.equal(container.querySelectorAll('button').find(node => node.textContent === (language === 'de' ? 'Datenschutzeinstellungen' : 'Privacy choices')).type, 'button');
+    assert.equal(container.querySelectorAll('form')[0], form);
+    assert.equal(message.value, 'Unsaved report'); assert.equal(email.value, 'optional@example.test');
+  };
+  assert.equal(dialog.open, true); assertLocale('de');
+  dialog.querySelectorAll('button')[0].listeners.click();
+  assert.equal(f.ui.client.choice(), 'no'); assert.equal(dialog.open, false);
+  f.setLanguage('en'); assertLocale('en'); assert.equal(f.ui.client.choice(), 'no');
+  container.querySelectorAll('button').find(node => node.textContent === 'Privacy choices').listeners.click();
+  assert.equal(dialog.open, true);
+  dialog.querySelectorAll('button')[1].listeners.click();
+  assert.equal(f.ui.client.choice(), 'yes');
+  f.setLanguage('de'); assertLocale('de'); assert.equal(f.ui.client.choice(), 'yes');
+  container.querySelectorAll('button').find(node => node.textContent === 'Datenschutzeinstellungen').listeners.click();
+  assert.equal(dialog.open, true);
 });

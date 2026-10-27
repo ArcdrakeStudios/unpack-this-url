@@ -34,4 +34,7 @@ function refreshLinks() {
 }
 refreshLinks();
 window.addEventListener('arcdrake-language-change', refreshLinks);
+// The app may select ?lang=de before this widget exists. Announce that initial
+// choice after mounting so the native consent dialog uses the same locale.
+window.dispatchEvent(new CustomEvent('arcdrake-language-change', { detail: { language: getLanguage() } }));
 void measurement.track('page_view');
