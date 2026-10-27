@@ -4,7 +4,7 @@ The hosted application is available at [tools.arcdrake.com/unpack/](https://tool
 
 ## Files and paths
 
-Extract `artifacts/release/static-release.zip`. It contains five application files: `index.html`, `style.css`, `app.js`, `anatomy.js` and `language.js`, plus `LICENSE` and `THIRD_PARTY_NOTICES.md`. A separate `manifest.json` records archive and per-file SHA-256 hashes.
+Extract `artifacts/release/static-release.zip`. It contains nine application files: `index.html`, `style.css`, `app.js`, `anatomy.js`, `language.js`, `feedback.js`, `feedback-config.js`, `measurement-feedback-client.mjs` and `measurement-contract.mjs`, plus `LICENSE` and `THIRD_PARTY_NOTICES.md`. A separate `manifest.json` records archive and per-file SHA-256 hashes. Serve both `.js` and `.mjs` as JavaScript.
 
 Serve the extracted static files over HTTPS from a root or directory, preserving relative asset paths. A directory mount must serve its trailing-slash index. Do not serve the repository root, tests or development tools. No application backend, database or account system is required.
 
@@ -12,9 +12,9 @@ Serve the extracted static files over HTTPS from a root or directory, preserving
 
 Keep the application's Content Security Policy. Set `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`, and configure framing restrictions appropriate to your host. Revalidate HTML and avoid serving stale assets from another version.
 
-Keep `connect-src 'none'`; the inspector must not fetch submitted URLs. Clipboard access requires HTTPS or a supported loopback secure context. A denied clipboard request should still allow manual copying.
+Keep `connect-src 'self'` for the exact optional same-origin APIs. The inspector must not fetch submitted URLs. Missing intake returns 503; static hosting does not activate collection. Follow [feedback integration](MEASUREMENT-FEEDBACK.md) for the private service binding, HTTPS origin map, privacy copy and activation checks. Clipboard access requires HTTPS or a supported loopback secure context. A denied clipboard request should still allow manual copying.
 
-No service worker is installed. Language preference storage belongs to the current origin.
+No service worker is installed. Language and usage-count preference storage belong to the current origin.
 
 ## Check your deployment
 

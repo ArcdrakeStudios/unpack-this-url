@@ -2,10 +2,10 @@
 from pathlib import Path
 import hashlib, json, zipfile
 root = Path(__file__).resolve().parents[1]
-expected = {"index.html", "app.js", "style.css", "language.js", "anatomy.js"}
+expected = {"index.html", "app.js", "style.css", "language.js", "anatomy.js", "feedback.js", "feedback-config.js", "measurement-feedback-client.mjs", "measurement-contract.mjs"}
 entries = list((root / "dist").iterdir())
 if {p.name for p in entries} != expected or any(not p.is_file() or p.is_symlink() for p in entries):
-    raise SystemExit("dist must contain exactly the five approved regular app files; remove unexpected files/subdirectories from the release candidate")
+    raise SystemExit("dist must contain exactly the approved regular app files; review unexpected files/subdirectories in the release candidate")
 files = {name: root / "dist" / name for name in sorted(expected)}
 files.update({name: root / name for name in ["LICENSE", "THIRD_PARTY_NOTICES.md"]})
 output = root / "artifacts" / "release"

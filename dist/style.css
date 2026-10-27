@@ -6,3 +6,13 @@
 @media(max-width:600px){
  h1{font-size:clamp(2.5rem,12vw,3.7rem);overflow-wrap:anywhere}
 }
+
+.raw-details{border:1px solid var(--line);border-radius:14px;padding:0 1rem;margin-bottom:1.5rem}
+.raw-details>summary{font-size:.95rem;padding:1rem 0}
+.feedback-panel{margin-top:2rem}
+.feedback-panel p{font-size:.85rem;line-height:1.65;overflow-wrap:anywhere}
+.preview-notice{border-left:3px solid var(--warn);padding:.6rem .9rem;background:#f5e8d5}
+#measurement-feedback button{margin:.25rem .4rem .25rem 0;border-color:var(--line);background:var(--wash);color:var(--ink)}
+#measurement-feedback label{margin-top:1rem}
+#measurement-feedback select,#measurement-feedback input{display:block;width:100%;max-width:100%;padding:.7rem;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fffefa;color:var(--ink)}
+#measurement-feedback [role=status]{overflow-wrap:anywhere}

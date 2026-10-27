@@ -7,7 +7,7 @@ See the host, query parameters and nested links hidden inside a long URL before 
 ## How to use it
 
 1. Paste an absolute URL, such as `https://example.com/page?utm_source=newsletter`, or choose **Try an example**.
-2. Inspect the parsed host, original components, query entries and nested links.
+2. Read the parsed host and notable observations. Open **All URL details** for original components, query entries and nested links.
 3. Choose whether to remove common tracking parameters, credentials or the fragment.
 4. Check the exact preview, then copy it.
 
@@ -30,9 +30,24 @@ Tracking cleanup affects only the outer query. It removes `utm_*`, `fbclid`, `gc
 
 Copying uses the browser clipboard when permitted; otherwise the preview is selected for manual copying. Clear removes input and results from the page. Your browser and clipboard may retain their own data.
 
-English and German are available. Only the language preference is stored locally; entered URLs and results are not.
+English and German are available. Language and optional usage-count choices may be stored locally; entered URLs and results are not.
 
-The hosted site receives ordinary page and asset requests. See its [privacy information](https://tools.arcdrake.com/privacy/) for hosting details.
+The local candidate includes voluntary feedback and optional action counts, off
+until allowed and overridden by GPC/Do Not Track. Counts contain only product and
+action type, never the inspected URL or result. They describe actions, not unique
+visitors. Feedback sends to Arcdrake only with **Send feedback**; do not include
+private URLs or credentials. A missing service leaves inspection working and
+keeps feedback text in the form without automatic retries. A failed confirmation
+cannot prove whether a write was stored. No collection service is activated by
+this static package. Its release configuration disables all collection requests;
+the page displays service unavailability and keeps inspection usable. See
+[integration and retention](docs/MEASUREMENT-FEEDBACK.md).
+
+The host/provider receives connection metadata for requests, including an IP
+address. See the host's [privacy information](https://tools.arcdrake.com/privacy/)
+and [contact Arcdrake](https://arcdrake.com/contact/). German:
+[Datenschutz](https://tools.arcdrake.com/de/privacy/) and
+[Kontakt](https://arcdrake.com/de/contact/).
 
 ## Run locally
 
